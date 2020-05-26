@@ -35,20 +35,15 @@ class Obstacles(Platform):
         self.arm_image.fill(RED)
         self.arm_rects.right = self.rect.left
         self.arm_rects.bottom = self.rect.bottom + height//2
+        self.velocity = 6
+        self.vel_chng_rt = 200
 
     def update(self):
         # progress left
-        if self.game.score < 200:
-            self.rect.x -= 6
-        elif self.game.score < 400:
-            self.rect.x -= 7
-        elif self.game.score < 600:
-            self.rect.x -= 8
-        elif self.game.score < 800:
-            self.rect.x -= 9
-        else:
-            self.rect.x -= 10
+        if self.game.score % self.vel_chng_rt == 0:
+            self.velocity += 1
 
+        self.rect.x -= self.velocity
 
 class Cloud(Obstacles):
     def __init__(self, x, y, width, height, color, game):
