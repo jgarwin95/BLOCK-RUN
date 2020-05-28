@@ -9,6 +9,17 @@ from sprites import *
 current_dir = os.path.dirname(__file__)
 
 class Game(object):
+    """Game object contains game loop and controls events
+
+    Attributes:
+        jump_sound (Sound): game sounds      
+        hit_sound (Sound): game sounds 
+        score_sound (Sound): game sounds
+        screen (Surface): surface on which game is played
+        clock (Clock): keeps track of in-game time
+        running (bool): keeps track if game is running
+        font_name (str): font used for text writing
+    """    
     def __init__(self):
         # initialize game window, sprite, etc.
         pg.init()
@@ -23,6 +34,7 @@ class Game(object):
         self.font_name = pg.font.match_font(FONT_NAME)
 
     def load_data(self):
+        """Read in highscores.txt and generate highscore"""        
         if os.path.exists('highscores.txt'):        # if highscores exist then read into file_contents
             self.file = open('highscores.txt', 'r')
             self.high_score_text = self.file.read()
@@ -36,7 +48,7 @@ class Game(object):
             self.high_score = int(self.high_score_text.lstrip('0'))
 
     def new_game(self):
-        # start a new game
+        '''Start a new game'''
         self.count = 0
         self.score = 0
         self.timer = 0
@@ -46,18 +58,6 @@ class Game(object):
         self.leading_zeros = '0000'
         # the obstacle generation time is moves downward as game progresses
         self.obs_gen_time = 1500
-
-        #if os.path.exists('highscores.txt'):        # if highscores exist then read into file_contents
-        #    self.file = open('highscores.txt', 'r')
-        #    self.high_score_text = self.file.read()
-        #    self.file.close()
-        #else:
-        #    self.high_score_text = '00000'
-        ## number value of high_score for comparisons later
-        #if self.high_score_text == '00000':  
-        #    self.high_score = 0
-        #else:
-        #    self.high_score = int(self.high_score_text.lstrip('0'))
         self.load_data()
 
         self.all_sprites = pg.sprite.Group()
@@ -102,6 +102,7 @@ class Game(object):
         self.run()
 
     def run(self):
+        '''Run game while playing'''
         # game loop
         self.playing = True
         while self.playing:
@@ -112,6 +113,7 @@ class Game(object):
             self.draw()
 
     def update(self):
+        '''Update all events that are internal to the game (collisions, movements, etc.)'''
         # game loop - update
         self.all_sprites.update()
         # Search for collisions between block and platform
@@ -160,6 +162,7 @@ class Game(object):
             self.score_sound.play()
 
     def events(self):
+        '''Process external user input'''
         # game loop - events
         for event in pg.event.get():
             # check for closing window
@@ -175,6 +178,7 @@ class Game(object):
             self.block.jump()
                     
     def draw(self):
+        '''Draw all game objects to screen'''
         # game loop - draw
         # render
         self.screen.fill(WHITE)
@@ -188,6 +192,13 @@ class Game(object):
         pg.display.flip() # flip after drawing everything to screen
 
     def generate_cacti(self, obs_x_pos, obs_height, n):
+        """Generate cactus obstacle off screen.
+
+        Args:
+            obs_x_pos (int): randomly selected x position for cactus
+            obs_height (int): random selected height for cactus
+            n (int): the nth number of cactus in a grouping. Used to determine spacing.
+        """        
         # The arm positions of the block cactuses have two settings 1/2 height or 2/3 height.
         # This position is randomly chosen.
         arm_y_pos = [OBS_Y_POS - round(obs_height * 2/3), OBS_Y_POS - round(obs_height * 1/2)]
@@ -224,8 +235,7 @@ class Game(object):
         self.all_sprites.add(left_arm_bump)
 
     def write_highscores(self):
-        '''Determine if current score is high score and write to outfile'';
-        '''
+        '''Determine if current score is high score and write to outfile'''
         # if new score is greater than highscore, replace, and write to file
         self.outfile = open('highscores.txt', 'w')  # open up file in 'w' under same name to overwrite scores in new order
 
@@ -237,6 +247,7 @@ class Game(object):
         self.outfile.close()
         
     def show_start_screen(self):
+        '''Display start screen while waiting for user input'''
         self.paused = True
         self.opening_sprites = pg.sprite.Group()
         self.start_game_block = Block(self)
@@ -276,6 +287,7 @@ class Game(object):
                         self.paused = False
 
     def show_end_screen(self):
+        '''Display end game screen while waiting for user input'''
         self.paused = True
         self.hit_sound.play()
         self.write_highscores()
@@ -297,6 +309,15 @@ class Game(object):
                         self.paused = False
 
     def draw_text(self, text, size, color, x, y):
+        """Draw text to screen
+
+        Args:
+            text (str): Text to be displayed to screen
+            size (int): Font size of text displayed to screen
+            color (tuple): RGB color value of font to screen
+            x (int): x position of text on screen
+            y (int): y position of text on screen
+        """        
         font = pg.font.Font(self.font_name, size)
         text_surface = font.render(text, False, color)
         text_rect = text_surface.get_rect()
