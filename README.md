@@ -20,7 +20,7 @@ If you haven't yet stumbled upon Google Chrome's hidden game (unlikely) or would
 
 ---
 ## Demo
-![photo](screenshots\\block-run.gif)
+![photo](screenshots/block-run.gif)
 
 ---
 ## How-To-Play
